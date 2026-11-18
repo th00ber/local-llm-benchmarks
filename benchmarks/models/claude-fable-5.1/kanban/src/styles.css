@@ -1,0 +1,875 @@
+/* ==========================================================================
+   Kanban board — styles
+   Sections: Tokens · Base · Header · Board · Columns · Cards · Form ·
+             Drag & Drop · Statistics bar · Responsive · Reduced motion
+   ========================================================================== */
+
+/* ---------- Tokens: dark theme (default) --------------------------------- */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #0f1117;
+  --glow-a: rgba(112, 124, 255, 0.26);
+  --glow-b: rgba(38, 190, 160, 0.17);
+
+  --text: #e8eaf2;
+  --text-muted: #9ba3b8;
+  --text-faint: #6d758a;
+
+  --glass: rgba(255, 255, 255, 0.045);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
+  --surface: rgba(255, 255, 255, 0.06);
+  --surface-hover: rgba(255, 255, 255, 0.095);
+  --surface-border: rgba(255, 255, 255, 0.08);
+  --field-bg: rgba(8, 10, 16, 0.55);
+  --bar-bg: rgba(15, 17, 23, 0.78);
+
+  --accent: #8b9cff;
+  --accent-contrast: #0f1117;
+  --accent-soft: rgba(139, 156, 255, 0.18);
+
+  --low: #5fd98f;
+  --low-bg: rgba(95, 217, 143, 0.14);
+  --medium: #f5b94a;
+  --medium-bg: rgba(245, 185, 74, 0.15);
+  --high: #ff7b7b;
+  --high-bg: rgba(255, 123, 123, 0.15);
+  --danger: #ff7070;
+
+  --stage-saturation: 80%;
+  --stage-lightness: 68%;
+
+  --column-width: 300px;
+  --card-gap: 10px;
+  --stats-height: 56px;
+  --radius-panel: 16px;
+  --radius-card: 11px;
+  --radius-control: 8px;
+}
+
+/* ---------- Tokens: light theme ------------------------------------------ */
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #e9ecf5;
+  --glow-a: rgba(112, 124, 255, 0.28);
+  --glow-b: rgba(38, 190, 160, 0.22);
+
+  --text: #1a1d2a;
+  --text-muted: #555d74;
+  --text-faint: #7b8298;
+
+  --glass: rgba(255, 255, 255, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.85);
+  --glass-shadow: 0 18px 40px -20px rgba(42, 52, 94, 0.35);
+  --surface: rgba(255, 255, 255, 0.8);
+  --surface-hover: rgba(255, 255, 255, 1);
+  --surface-border: rgba(26, 29, 42, 0.08);
+  --field-bg: rgba(255, 255, 255, 0.85);
+  --bar-bg: rgba(244, 246, 252, 0.82);
+
+  --accent: #4353d8;
+  --accent-contrast: #ffffff;
+  --accent-soft: rgba(67, 83, 216, 0.14);
+
+  --low: #177a3e;
+  --low-bg: rgba(31, 157, 85, 0.14);
+  --medium: #9a5a05;
+  --medium-bg: rgba(232, 156, 21, 0.2);
+  --high: #c02727;
+  --high-bg: rgba(220, 53, 53, 0.13);
+  --danger: #c62828;
+
+  --stage-saturation: 62%;
+  --stage-lightness: 46%;
+}
+
+/* ---------- Base --------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text);
+  /* Soft colour fields behind the board give the glass panels something to blur. */
+  background:
+    radial-gradient(52rem 34rem at 8% -8%, var(--glow-a), transparent 62%),
+    radial-gradient(46rem 32rem at 96% 108%, var(--glow-b), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Shared controls */
+
+.field {
+  width: 100%;
+  min-width: 0;
+  padding: 8px 10px;
+  background: var(--field-bg);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-control);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field::placeholder {
+  color: var(--text-faint);
+}
+
+.field:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.field[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.btn {
+  padding: 8px 14px;
+  font-weight: 500;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.btn:hover {
+  background: var(--surface-hover);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn--primary {
+  color: var(--accent-contrast);
+  background: var(--accent);
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.btn--primary:hover {
+  background: var(--accent);
+  filter: brightness(1.08);
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  color: var(--text-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.icon-btn:hover {
+  color: var(--danger);
+  background: var(--high-bg);
+}
+
+.icon-btn:focus-visible {
+  opacity: 1;
+}
+
+.icon-btn[aria-disabled='true'] {
+  cursor: not-allowed;
+}
+
+.icon-btn[aria-disabled='true']:hover {
+  color: var(--text-faint);
+  background: transparent;
+}
+
+.icon {
+  display: inline-grid;
+}
+
+/* ---------- Header: title, search, priority filter, theme toggle --------- */
+
+.app-header {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 16px 24px 12px;
+}
+
+.app-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.toolbar {
+  display: flex;
+  flex: 1 1 420px;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-width: 0;
+}
+
+.search-input {
+  flex: 1 1 200px;
+  max-width: 340px;
+}
+
+.priority-filter {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+.theme-toggle {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* ---------- Board: horizontally scrolling row of columns ----------------- */
+
+.board {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: flex-start;
+  gap: 16px;
+  min-height: 0;
+  padding: 8px 24px calc(var(--stats-height) + 20px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-padding-inline: 24px;
+}
+
+/* ---------- Columns: frosted-glass panels -------------------------------- */
+
+.column {
+  --stage: hsl(var(--stage-hue, 240) var(--stage-saturation) var(--stage-lightness));
+
+  position: relative;
+  display: flex;
+  flex: 0 0 var(--column-width);
+  flex-direction: column;
+  max-height: 100%;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.25s ease;
+}
+
+.column-header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 12px 10px 8px 14px;
+}
+
+/* The dot's hue shows how far along the workflow the column sits. */
+.column-header::before {
+  content: '';
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--stage);
+  box-shadow: 0 0 10px hsl(var(--stage-hue, 240) var(--stage-saturation) var(--stage-lightness) / 0.55);
+}
+
+.column-title {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 2px 4px;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: 6px;
+  cursor: text;
+}
+
+.column-rename {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 1px 6px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--field-bg);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.column-count {
+  flex: none;
+  margin-right: auto;
+  padding: 1px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  background: var(--surface);
+  border-radius: 999px;
+}
+
+.column:hover .column-delete,
+.column:focus-within .column-delete {
+  opacity: 1;
+}
+
+.column:hover .column-delete[aria-disabled='true'],
+.column:focus-within .column-delete[aria-disabled='true'] {
+  opacity: 0.35;
+}
+
+.card-list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--card-gap);
+  min-height: 64px;
+  padding: 8px 10px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-hover) transparent;
+}
+
+.empty-hint {
+  margin: auto 0;
+  padding: 10px 6px;
+  font-size: 13px;
+  color: var(--text-faint);
+  text-align: center;
+}
+
+.column-footer {
+  flex: none;
+  padding: 4px 10px 10px;
+}
+
+.add-card-btn {
+  width: 100%;
+  padding: 8px 10px;
+  color: var(--text-muted);
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.add-card-btn:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+
+.add-column-btn {
+  flex: 0 0 var(--column-width);
+  padding: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-align: left;
+  background: transparent;
+  border: 1px dashed var(--glass-border);
+  border-radius: var(--radius-panel);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.add-column-btn:hover {
+  color: var(--text);
+  background: var(--glass);
+  border-color: var(--accent);
+}
+
+/* ---------- Cards -------------------------------------------------------- */
+
+.card {
+  flex: none;
+  padding: 10px 10px 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  cursor: grab;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    background-color 0.16s ease,
+    opacity 0.2s ease;
+}
+
+.card:hover {
+  background: var(--surface-hover);
+  box-shadow: 0 10px 22px -10px rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.card-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.card-delete {
+  margin: -3px -3px 0 0;
+}
+
+.card:hover .card-delete,
+.card:focus-within .card-delete {
+  opacity: 1;
+}
+
+.card-description {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.card-description summary {
+  display: inline-block;
+  padding: 1px 2px;
+  font-size: 12px;
+  color: var(--text-faint);
+  list-style: none;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.card-description summary::-webkit-details-marker {
+  display: none;
+}
+
+.card-description summary::before {
+  content: '▸';
+  display: inline-block;
+  margin-right: 5px;
+  transition: transform 0.15s ease;
+}
+
+.card-description[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.card-description summary:hover {
+  color: var(--text);
+}
+
+.card-description p {
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+  margin-top: 10px;
+}
+
+/* Priority badges: soft pills */
+.badge {
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.badge--low {
+  color: var(--low);
+  background: var(--low-bg);
+}
+
+.badge--medium {
+  color: var(--medium);
+  background: var(--medium-bg);
+}
+
+.badge--high {
+  color: var(--high);
+  background: var(--high-bg);
+}
+
+.due {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.due--overdue {
+  font-weight: 600;
+  color: var(--danger);
+}
+
+/* Cards in the Done column: muted, title struck through */
+.column.is-done .card {
+  background: transparent;
+  box-shadow: none;
+}
+
+.column.is-done .card-title {
+  color: var(--text-faint);
+  text-decoration: line-through;
+}
+
+.column.is-done .card-description,
+.column.is-done .card-meta {
+  opacity: 0.55;
+  filter: saturate(0.4);
+}
+
+/* Fade-out when a card is deleted (duration matches REMOVE_ANIMATION_MS) */
+.card.removing {
+  height: 0 !important;
+  margin-bottom: calc(-1 * var(--card-gap));
+  padding-block: 0;
+  overflow: hidden;
+  border-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.96);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    height 0.22s ease,
+    margin 0.22s ease,
+    padding 0.22s ease;
+}
+
+/* ---------- Inline "add card" form --------------------------------------- */
+
+.card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-card);
+}
+
+.card-form textarea {
+  min-height: 56px;
+  resize: vertical;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 8px;
+}
+
+.form-label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.form-label .field {
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.form-error {
+  font-size: 12px;
+  color: var(--danger);
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.form-actions .btn {
+  padding: 6px 14px;
+}
+
+/* ---------- Drag & Drop -------------------------------------------------- */
+
+/* The card left behind while its ghost is being dragged */
+.card.dragging {
+  opacity: 0.35;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Hover lift would fight the drag: freeze it while a drag is in progress */
+.board.is-dragging .card:hover {
+  transform: none;
+}
+
+/* Target column: accent border and a pulsing ring */
+.column.drag-over {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, var(--glass));
+  animation: drop-zone-pulse 1.3s ease-in-out infinite;
+}
+
+@keyframes drop-zone-pulse {
+  0%,
+  100% {
+    box-shadow: var(--glass-shadow), 0 0 0 1px var(--accent), 0 0 0 0 var(--accent-soft);
+  }
+  50% {
+    box-shadow: var(--glass-shadow), 0 0 0 1px var(--accent), 0 0 0 7px var(--accent-soft);
+  }
+}
+
+/*
+ * Insertion line. The marker itself takes no room (zero height, and its
+ * negative margin cancels the extra flex gap) so cards never jump while the
+ * pointer moves; the visible bar is drawn in the gap just above the marker.
+ */
+.drop-indicator {
+  position: relative;
+  flex: none;
+  height: 0;
+  margin-bottom: calc(-1 * var(--card-gap));
+  pointer-events: none;
+}
+
+.drop-indicator::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: var(--accent);
+  border-radius: 999px;
+  box-shadow: 0 0 12px var(--accent);
+  animation: indicator-in 0.12s ease-out;
+}
+
+@keyframes indicator-in {
+  from {
+    opacity: 0;
+    transform: scaleX(0.6);
+  }
+}
+
+/* ---------- Statistics bar (fixed at the bottom of the viewport) --------- */
+
+.stats-bar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px 32px;
+  height: var(--stats-height);
+  padding: 0 24px;
+  overflow-x: auto;
+  background: var(--bar-bg);
+  border-top: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  backdrop-filter: blur(16px) saturate(150%);
+}
+
+.stat {
+  display: flex;
+  flex: none;
+  align-items: baseline;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.stat-value {
+  font-size: 17px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat--alert .stat-value {
+  color: var(--danger);
+}
+
+.stat-meter {
+  align-self: center;
+  width: 96px;
+  height: 6px;
+  overflow: hidden;
+  background: var(--surface-hover);
+  border-radius: 999px;
+}
+
+.stat-meter-fill {
+  display: block;
+  height: 100%;
+  background: var(--low);
+  border-radius: inherit;
+  transition: width 0.35s ease;
+}
+
+/* ---------- Responsive --------------------------------------------------- */
+
+/* Touch screens have no hover: keep the delete buttons visible. */
+@media (hover: none) {
+  .icon-btn {
+    opacity: 0.7;
+  }
+
+  .column-delete[aria-disabled='true'] {
+    opacity: 0.3;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --column-width: min(300px, 84vw);
+  }
+
+  .app-header {
+    padding: 12px 16px 8px;
+  }
+
+  .toolbar {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .search-input {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .priority-filter {
+    flex: 1 1 auto;
+  }
+
+  .board {
+    gap: 12px;
+    padding-inline: 16px;
+    scroll-padding-inline: 16px;
+    scroll-snap-type: x proximity;
+  }
+
+  .column,
+  .add-column-btn {
+    scroll-snap-align: start;
+  }
+
+  /* Four stats side by side, label above value, so nothing is cut off. */
+  .stats-bar {
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 16px;
+  }
+
+  .stat {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .stat-label {
+    font-size: 11px;
+  }
+
+  .stat-value {
+    font-size: 15px;
+  }
+
+  .stat-meter {
+    display: none;
+  }
+}
+
+/* ---------- Reduced motion ----------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

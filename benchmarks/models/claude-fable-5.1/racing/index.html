@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Neon Dawn GP - a 3D arcade racing game. Three laps, five checkpoints, one sunrise." />
+    <meta name="theme-color" content="#10164a" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2310164a'/%3E%3Ccircle cx='16' cy='18' r='9' fill='%23ffb347'/%3E%3Crect y='20' width='32' height='2' fill='%2310164a'/%3E%3Crect y='24' width='32' height='3' fill='%2310164a'/%3E%3C/svg%3E"
+    />
+    <title>Neon Dawn GP</title>
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="scene" aria-label="Neon Dawn GP race view"></canvas>
+
+      <div id="hud">
+        <div id="hud-flash" class="hud-flash"></div>
+
+        <header class="hud-top">
+          <div class="brand">
+            <h1 class="brand-title">Neon Dawn GP</h1>
+            <p class="brand-sub">Sunrise Circuit &middot; 3 laps</p>
+          </div>
+
+          <div class="stats" role="status" aria-live="off">
+            <div class="stat stat-lap">
+              <span class="stat-label">Race</span>
+              <span id="hud-lap" class="stat-value">Lap 1 / 3</span>
+            </div>
+            <div class="stat stat-time">
+              <span class="stat-label">Time</span>
+              <span id="hud-time" class="stat-value">0:00.000</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Checkpoint</span>
+              <span id="hud-checkpoint" class="stat-value">0 / 5</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Best lap</span>
+              <span id="hud-best" class="stat-value">-:--.---</span>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button id="btn-restart" class="btn btn-primary" type="button" title="Restart the race (R)">
+              Restart <kbd>R</kbd>
+            </button>
+            <button id="btn-sound" class="btn" type="button" title="Toggle sound (M)" aria-pressed="true">Sound: on</button>
+          </div>
+        </header>
+
+        <div class="hud-middle">
+          <canvas id="minimap" class="minimap" aria-label="Track map"></canvas>
+          <div id="hud-warning" class="hud-warning">Wrong way</div>
+          <div id="hud-countdown" class="hud-countdown"></div>
+          <div id="hud-message" class="hud-message" role="status" aria-live="polite"></div>
+        </div>
+
+        <footer class="hud-bottom">
+          <ul class="help" aria-label="Controls">
+            <li><kbd>Z</kbd><kbd>&uarr;</kbd> Accelerate</li>
+            <li><kbd>S</kbd><kbd>&darr;</kbd> Brake / Reverse</li>
+            <li><kbd>Q</kbd><kbd>&larr;</kbd> Left</li>
+            <li><kbd>D</kbd><kbd>&rarr;</kbd> Right</li>
+            <li><kbd>R</kbd> Restart</li>
+            <li><kbd>M</kbd> Sound</li>
+          </ul>
+
+          <div class="speedo">
+            <span id="hud-status" class="speedo-status"></span>
+            <div class="speedo-readout">
+              <span id="hud-speed" class="speedo-value">0</span>
+              <span class="speedo-unit">km/h</span>
+            </div>
+            <div class="speedo-bar"><i id="hud-speed-bar"></i></div>
+          </div>
+        </footer>
+
+        <section id="finish-panel" class="finish" hidden aria-labelledby="finish-title">
+          <div class="finish-card">
+            <h2 id="finish-title">Race Complete</h2>
+            <p class="finish-label">Final time</p>
+            <p id="finish-time" class="finish-time">0:00.000</p>
+            <ol id="finish-laps" class="finish-laps"></ol>
+            <p id="finish-record" class="finish-record"></p>
+            <button id="btn-finish-restart" class="btn btn-primary btn-large" type="button">Race again <kbd>R</kbd></button>
+          </div>
+        </section>
+      </div>
+
+      <div id="fatal" class="fatal" hidden></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

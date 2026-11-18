@@ -1,0 +1,21 @@
+{
+  "name": "kanban-board",
+  "version": "1.0.0",
+  "description": "Personal Kanban board with native drag & drop, filtering and localStorage persistence",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/vitest.mjs run",
+    "test:watch": "node scripts/vitest.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^31.0.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vite-plugin-singlefile": "^2.3.4",
+    "vitest": "^5.1.0"
+  }
+}
